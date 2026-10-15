@@ -1,98 +1,55 @@
-Mathias Savat
-# Storingsmelder
+# Storingsmelder van Mathias Savat
 
-Een klein meldingensysteem voor storingen. Je meldt een storing via een
-formulier, je ziet de openstaande meldingen in een lijst, en je sluit ze af als
-ze opgelost zijn.
+Korte uitleg: wat doet de applicatie en welke database gebruikt ze (bv. Flask + PostgreSQL).
 
-Deze applicatie is het startpunt voor **Cloud computing (B-UCLL-MGN13A)**. Je
-werkt er het hele semester mee. De applicatie zelf verandert bijna niet, wat
-verandert is hoe en waar ze draait.
+## Vereisten
+- Docker en Docker Compose v2 (check met `docker --version` en `docker compose version`)
+- Git
 
----
+## Starten vanaf nul
 
-## Wat er in deze repo zit
-
-```
-app.py              de applicatie
-requirements.txt    de pakketten die ze nodig heeft
-templates/          de HTML van de webpagina
+1. Clone de repository
+```bash
+   git clone https://github.com/Amecy16/Cloud-computing.git
+   cd Cloud-computing
+   git switch --detach <commit-id>
 ```
 
-## Wat er bewust niet in zit
-
-Geen Dockerfile en geen compose-bestand. Die schrijf je zelf, dat is precies
-wat je in dit vak leert.
-
----
-
-## Wat de applicatie nodig heeft
-
-| | |
-|---|---|
-| Python | 3.11 of hoger |
-| Pakketten | staan in `requirements.txt` |
-| Poort | 8000, tenzij je `PORT` anders instelt |
-
-## Instellingen
-
-Alles wordt geregeld met environment variables. Er staat niets vast in de code,
-en er is geen configuratiebestand dat je moet aanpassen.
-
-| Variabele | Standaard | Wat het doet |
-|---|---|---|
-| `DATABASE_URL` | leeg | Leeg betekent opslaan in een SQLite-bestand. Vul je hier een PostgreSQL-adres in, dan gebruikt de applicatie die database |
-| `SQLITE_PAD` | `/data/storingen.db` | Waar het SQLite-bestand komt te staan |
-| `APP_TITEL` | `Storingsmelder` | De titel bovenaan de pagina |
-| `PORT` | `8000` | De poort waarop de applicatie luistert |
-
-### Twee standen
-
-De applicatie draait met of zonder aparte database.
-
-**Zonder `DATABASE_URL`** schrijft ze naar een SQLite-bestand. Dat werkt meteen
-en je hebt niets anders nodig. Let op waar dat bestand terechtkomt, want daar
-kom je later op terug.
-
-**Met `DATABASE_URL`** praat ze met PostgreSQL. Bijvoorbeeld:
-
-```
-DATABASE_URL=postgresql://storing:geheim@db:5432/storingen
+2. Maak je eigen `.env` aan op basis van het voorbeeld
+```bash
+   cp .env.example .env
 ```
 
-Je hoeft de tabel niet zelf aan te maken. De applicatie doet dat bij het
-opstarten als ze nog niet bestaat.
-
----
-
-## Controleren of ze draait
-
-Naast de gewone pagina is er een adres dat kort antwoordt of alles in orde is:
-
+3. Vul de lege waardes in `.env` in (zelfde namen als in `.env.example`)
+```bash
+   nano .env
 ```
-GET /health
+   Bijvoorbeeld: `DB_USER`, `DB_PASSWORD`, `DB_NAME`.
+
+4. Bouw en start alles met één commando
+```bash
+   docker compose up -d --build
 ```
 
-Draait alles, dan krijg je `{"status": "ok", ...}` met code 200. Kan de
-applicatie haar database niet bereiken, dan krijg je code 503. Dat adres komt
-later in het semester nog van pas.
+5. Controleer of alles draait
+```bash
+   docker compose ps
+   docker compose logs -f
+```
 
----
+6. Open de applicatie op http://localhost:8000
 
-## Wat je er dit semester mee doet
+## Data blijft bewaard na een herstart
 
-| Blok | Wat je doet |
-|---|---|
-| Week 1 tot 4 | Je zet deze applicatie in een container en laat ze samen met een database draaien |
-| Week 5 tot 9 | Je zet diezelfde applicatie op een Kubernetes-cluster en maakt ze bereikbaar in je browser |
-| Week 10 tot 11 | Je laat een pipeline het image bouwen en klaarzetten |
+De database gebruikt een named volume, dus data overleeft een herstart.
 
-Je begint dus nooit opnieuw. Elke opdracht bouwt verder op de vorige.
+```bash
+docker compose down        # stopt en verwijdert containers (volume blijft)
+docker compose up -d       # opnieuw starten, data is er nog
+```
 
----
-
-## Deze repo is van jou
-
-Je hebt hem gemaakt vanaf het sjabloon, dus dit is jouw kopie. Werk erin, commit
-elke les, en push. Indienen doe je met de link naar een commit. Hoe dat precies
-gaat, staat in de opdrachtbundel op Toledo.
+## Stoppen en opruimen
+```bash
+docker compose down        # stoppen, data blijft
+docker compose down -v     # stoppen EN data wissen (echt vanaf nul)
+```
