@@ -17,5 +17,10 @@ spec:
       containers:
         - name: storingsmelder
           image: ghcr.io/amecy16/storingsmelder:1.1
+
           ports:
             - containerPort: 8000
+
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://postgres:geheim123@db:5432/storingsmelder"

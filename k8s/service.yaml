@@ -1,0 +1,10 @@
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: storingsmelder
+   spec:
+     selector:
+       app: storingsmelder    # exact het label uit je deployment.yaml
+     ports:
+     - port: 80
+       targetPort: 8000       # de poort van JOUW app, pas aan indien anders
